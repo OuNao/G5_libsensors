@@ -29,7 +29,7 @@
 
 /*****************************************************************************/
 OrientationSensor::OrientationSensor()
-    : SensorBase(NULL, "orientation_sensor"),
+    : SensorBase(NULL, "ecompass_data"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false)
@@ -66,7 +66,14 @@ int OrientationSensor::enable(int32_t, int en) {
 	   
     LOGD("OrientationSensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
-    if (flags != mEnabled) {
+    mEnabled = flags;
+    if (flags == 1) {
+      system("G5sensors o 1");
+      {
+    else if  (flags == 0) {
+      system("G5sensors o 0");
+      {
+    /*if (flags != mEnabled) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
         LOGD("OrientationSensor::~enable(0, %d) open %s",en,  input_sysfs_path);
@@ -88,7 +95,7 @@ int OrientationSensor::enable(int32_t, int en) {
             return 0;
         }
         return -1;        
-    }
+    }*/
     return 0;
 }
 
@@ -103,7 +110,7 @@ bool OrientationSensor::hasPendingEvents() const {
 
 int OrientationSensor::setDelay(int32_t handle, int64_t ns)
 {
-    LOGD("OrientationSensor::~setDelay(%d, %lld)", handle, ns);
+    /*LOGD("OrientationSensor::~setDelay(%d, %lld)", handle, ns);
 
     int fd;
 
@@ -120,7 +127,8 @@ int OrientationSensor::setDelay(int32_t handle, int64_t ns)
         close(fd);
         return 0;
     }
-    return -1;
+    return -1;*/
+    return 0;
 }
 
 

@@ -33,9 +33,6 @@
 
 #include "sensors.h"
 
-#include "LightSensor.h"
-#include "ProximitySensor.h"
-//#include "BoschYamaha.h"
 #include "Smb380Sensor.h"
 #include "CompassSensor.h"
 #include "OrientationSensor.h"
@@ -44,52 +41,32 @@
 
 #define DELAY_OUT_TIME 0x7FFFFFFF
 
-#define LIGHT_SENSOR_POLLTIME    2000000000
-
 
 #define SENSORS_ACCELERATION     (1<<ID_A)
 #define SENSORS_MAGNETIC_FIELD   (1<<ID_M)
 #define SENSORS_ORIENTATION      (1<<ID_O)
-#define SENSORS_LIGHT            (1<<ID_L)
-#define SENSORS_PROXIMITY        (1<<ID_P)
-#define SENSORS_GYROSCOPE        (1<<ID_GY)
 
 #define SENSORS_ACCELERATION_HANDLE     0
 #define SENSORS_MAGNETIC_FIELD_HANDLE   1
 #define SENSORS_ORIENTATION_HANDLE      2
-#define SENSORS_LIGHT_HANDLE            3
-#define SENSORS_PROXIMITY_HANDLE        4
-#define SENSORS_GYROSCOPE_HANDLE        5
-
-#define AKM_FTRACE 0
-#define AKM_DEBUG 0
-#define AKM_DATA 0
 
 /*****************************************************************************/
 
 /* The SENSORS Module */
 static const struct sensor_t sSensorList[] = {
 
-        { "SMB380 3-axis Accelerometer",
+        { "BMA023 Accelerometer",
           "Bosch Sensortec",
           1, SENSORS_ACCELERATION_HANDLE,
           SENSOR_TYPE_ACCELEROMETER, RANGE_A, RESOLUTION_A, 0.20f, 40000, { } },
-        { "MS3C 3-axis Magnetic field sensor",
-          "Yamaha ",
+        { "MMC31xx Magnetic field sensor",
+          "Memsic",
           1, SENSORS_MAGNETIC_FIELD_HANDLE,
           SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 30000, { } },
-	{ "CM Hacked Orientation Sensor",
-          "CM Team",
+	{ "Memsic/Bosh combo Orientation Sensor",
+          "Memsic/Bosh",
           1, SENSORS_ORIENTATION_HANDLE,
           SENSOR_TYPE_ORIENTATION,  360.0f, CONVERT_O, 7.8f, 30000, { } },
-        { "GP2A Light sensor",
-          "Sharp",
-          1, SENSORS_LIGHT_HANDLE,
-          SENSOR_TYPE_LIGHT, 10240.0f, 1.0f, 0.75f, 0, { } },
-        { "GP2A Proximity sensor",
-          "Sharp",
-          1, SENSORS_PROXIMITY_HANDLE,
-          SENSOR_TYPE_PROXIMITY, 5.0f, 5.0f, 0.75f, 0, { } },        
 };
 
 
@@ -132,11 +109,9 @@ struct sensors_poll_context_t {
 
 private:
     enum {
-        light           = 0,
-        proximity       = 1,
-        bosch           = 2,
-        yamaha          = 3,
-	orientation 	= 4,        
+        bosch           = 0,
+        memsic          = 1,
+	orientation 	= 2,        
 	numSensorDrivers,
         numFds,
     };
@@ -160,14 +135,9 @@ private:
             case ID_A:
             	return bosch;
 	    case ID_M:
-            	return yamaha;
+            	return memsic;
 	    case ID_O:
 		return orientation;
-	    case ID_P:
-                return proximity;
-            case ID_L:
-                return light;
-                 
         }
         return -EINVAL;
     }
@@ -177,25 +147,15 @@ private:
 
 sensors_poll_context_t::sensors_poll_context_t()
 {
-    mSensors[light] = new LightSensor();
-    mPollFds[light].fd = mSensors[light]->getFd();
-    mPollFds[light].events = POLLIN;
-    mPollFds[light].revents = 0;
-
-    mSensors[proximity] = new ProximitySensor();
-    mPollFds[proximity].fd = mSensors[proximity]->getFd();
-    mPollFds[proximity].events = POLLIN;
-    mPollFds[proximity].revents = 0;
-
     mSensors[bosch] = new Smb380Sensor();
     mPollFds[bosch].fd = mSensors[bosch]->getFd();
     mPollFds[bosch].events = POLLIN;
     mPollFds[bosch].revents = 0;
 
-    mSensors[yamaha] = new CompassSensor();
-    mPollFds[yamaha].fd = mSensors[yamaha]->getFd();
-    mPollFds[yamaha].events = POLLIN;
-    mPollFds[yamaha].revents = 0;
+    mSensors[memsic] = new CompassSensor();
+    mPollFds[memsic].fd = mSensors[memsic]->getFd();
+    mPollFds[memsic].events = POLLIN;
+    mPollFds[memsic].revents = 0;
 
     mSensors[orientation] = new OrientationSensor();
     mPollFds[orientation].fd = mSensors[orientation]->getFd();
@@ -229,28 +189,14 @@ sensors_poll_context_t::~sensors_poll_context_t() {
 int sensors_poll_context_t::activate(int handle, int enabled) {
     int err;
 
-    // Orientation requires accelerometer and magnetic sensor
     if (handle == ID_O) {
         mOrientationActive = enabled ? true : false;
-        if (!mAccelActive) {
-            err = real_activate(ID_A, enabled);
-            if (err) return err;
-        }
-        if (!mMagnetActive) {
-            err = real_activate(ID_M, enabled);
-            if (err) return err;
-        }
     }
-    // Keep track of magnetic and accelerometer use from system
     else if (handle == ID_A) {
         mAccelActive = enabled ? true : false;
-        // No need to enable or disable if orientation sensor is active as that will handle it
-        if (mOrientationActive) return 0;
     }
     else if (handle == ID_M) {
         mMagnetActive = enabled ? true : false;
-        // No need to enable or disable if orientation sensor is active as that will handle it
-        if (mOrientationActive) return 0;
     }
 
     return real_activate(handle, enabled);

@@ -29,7 +29,7 @@
 
 /*****************************************************************************/
 Smb380Sensor::Smb380Sensor()
-    : SensorBase(NULL, "accelerometer_sensor"),
+    : SensorBase(NULL, "ecompass_data"),
       mEnabled(0),
 
       mInputReader(4),
@@ -68,7 +68,14 @@ int Smb380Sensor::enable(int32_t, int en) {
 	   
     LOGD("Smb380Sensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
-    if (flags != mEnabled) {
+    mEnabled = flags;
+    if (flags == 1) {
+      system("G5sensors a 1");
+      {
+    else if  (flags == 0) {
+      system("G5sensors a 0");
+      {
+    /*if (flags != mEnabled) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
         LOGD("Smb380Sensor::~enable(0, %d) open %s",en,  input_sysfs_path);
@@ -90,7 +97,7 @@ int Smb380Sensor::enable(int32_t, int en) {
             return 0;
         }
         return -1;        
-    }
+    }*/
     return 0;
 }
 
@@ -105,7 +112,7 @@ bool Smb380Sensor::hasPendingEvents() const {
 
 int Smb380Sensor::setDelay(int32_t handle, int64_t ns)
 {
-    LOGD("Smb380Sensor::~setDelay(%d, %lld)", handle, ns);
+    /*LOGD("Smb380Sensor::~setDelay(%d, %lld)", handle, ns);
 
     int fd;
 
@@ -122,7 +129,8 @@ int Smb380Sensor::setDelay(int32_t handle, int64_t ns)
         close(fd);
         return 0;
     }
-    return -1;
+    return -1;*/
+    return 0;
 }
 
 
