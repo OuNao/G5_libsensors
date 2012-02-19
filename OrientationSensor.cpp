@@ -154,7 +154,7 @@ int OrientationSensor::readEvents(sensors_event_t* data, int count)
 	
     while (count && mInputReader.readEvent(&event)) {
         int type = event->type;
-        if (type == EV_REL) {
+        if (type == EV_ABS) {
             float value = event->value;
             if (event->code == EVENT_TYPE_YAW) {
                 mPendingEvent.orientation.azimuth = value * CONVERT_O_A;
