@@ -22,6 +22,7 @@
 #include <dirent.h>
 #include <sys/select.h>
 #include <cutils/log.h>
+#include <stdlib.h>
 
 
 #include "Smb380Sensor.h"
@@ -69,12 +70,8 @@ int Smb380Sensor::enable(int32_t, int en) {
     LOGD("Smb380Sensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
     mEnabled = flags;
-    if (flags == 1) {
-      system("G5sensors a 1");
-      {
-    else if  (flags == 0) {
-      system("G5sensors a 0");
-      {
+    if (flags == 1) system("G5sensors a 1");
+    else if  (flags == 0) system("G5sensors a 0");
     /*if (flags != mEnabled) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");

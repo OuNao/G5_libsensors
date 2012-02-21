@@ -22,6 +22,7 @@
 #include <dirent.h>
 #include <sys/select.h>
 #include <cutils/log.h>
+#include <stdlib.h>
 
 
 #include "OrientationSensor.h"
@@ -67,12 +68,8 @@ int OrientationSensor::enable(int32_t, int en) {
     LOGD("OrientationSensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
     mEnabled = flags;
-    if (flags == 1) {
-      system("G5sensors o 1");
-      {
-    else if  (flags == 0) {
-      system("G5sensors o 0");
-      {
+    if (flags == 1) system("G5sensors o 1");
+    else if  (flags == 0) system("G5sensors o 0");
     /*if (flags != mEnabled) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
