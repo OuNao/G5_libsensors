@@ -27,6 +27,8 @@
 
 #include "CompassSensor.h"
 
+#include "mecs.h"
+
 
 /*****************************************************************************/
 CompassSensor::CompassSensor()
@@ -65,36 +67,16 @@ CompassSensor::~CompassSensor() {
 }
 
 
-
 int CompassSensor::enable(int32_t, int en) {
     //LOGD("CompassSensor::~enable(0, %d)", en);
+    int fd, res;
     int flags = en ? 1 : 0;
     mEnabled = flags;
-    if (flags == 1) system("G5sensors m 1");
-    else if  (flags == 0) system("G5sensors m 0");
-    /*if (flags != mEnabled) {
-        int fd;
-        strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
-        LOGD("CompassSensor::~enable(0, %d) open %s",en,  input_sysfs_path);
-        fd = open(input_sysfs_path, O_RDWR);
-        if (fd >= 0) {
-             LOGD("CompassSensor::~enable(0, %d) opened %s",en,  input_sysfs_path);
-            char buf[2];
-            int err;
-            buf[1] = 0;
-            if (flags) {
-                buf[0] = '1';
-            } else {
-                buf[0] = '0';
-            }
-            err = write(fd, buf, sizeof(buf));
-            close(fd);
-            mEnabled = flags;
-            return 0;
-        }
-        return -1;        
-    }*/
-    return 0;
+    fd = open("/dev/ecompass_ctrl", O_RDWR);
+    res = ioctl(fd, ECOMPASS_IOC_SET_MFLAG, &flags);
+    /*if (flags == 1) system("G5sensors m 1");
+    else if  (flags == 0) system("G5sensors m 0");*/
+    return res;
 }
 
 
