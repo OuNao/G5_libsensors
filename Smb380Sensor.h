@@ -29,13 +29,6 @@
 /*****************************************************************************/
 
 
-/*struct smb380acc_t {
-		short x, /**< holds x-axis acceleration data sign extended. Range -512 to 511. */
-/*		      y, /**< holds y-axis acceleration data sign extended. Range -512 to 511. */
-/*		      z; /**< holds z-axis acceleration data sign extended. Range -512 to 511. */
-/*} ;*/
-
-
 #define SMB_POWER_OFF               0
 #define SMB_POWER_ON                1
 

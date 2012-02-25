@@ -32,17 +32,16 @@
 Smb380Sensor::Smb380Sensor()
     : SensorBase(NULL, "ecompass_data"),
       mEnabled(0),
-
       mInputReader(4),
       mHasPendingEvent(false)
 {
-    LOGD("Smb380Sensor::Smb380Sensor()");
+    //LOGD("Smb380Sensor::Smb380Sensor()");
     mPendingEvent.version = sizeof(sensors_event_t);
     mPendingEvent.sensor = ID_A;
     mPendingEvent.type = SENSOR_TYPE_ACCELEROMETER;
     memset(mPendingEvent.data, 0, sizeof(mPendingEvent.data));
     
-    LOGD("Smb380Sensor::Smb380Sensor() open data_fd");
+    //LOGD("Smb380Sensor::Smb380Sensor() open data_fd");
 	
     if (data_fd) {
         strcpy(input_sysfs_path, "/sys/class/input/");
@@ -56,7 +55,7 @@ Smb380Sensor::Smb380Sensor()
 
 Smb380Sensor::~Smb380Sensor() {
 
-    LOGD("Smb380Sensor::~Smb380Sensor()");
+    //LOGD("Smb380Sensor::~Smb380Sensor()");
     if (mEnabled) {
         enable(0, 0);
     }
@@ -65,9 +64,7 @@ Smb380Sensor::~Smb380Sensor() {
 
 
 int Smb380Sensor::enable(int32_t, int en) {
-
-	   
-    LOGD("Smb380Sensor::~enable(0, %d)", en);
+    //LOGD("Smb380Sensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
     mEnabled = flags;
     if (flags == 1) system("G5sensors a 1");
@@ -133,24 +130,20 @@ int Smb380Sensor::setDelay(int32_t handle, int64_t ns)
 
 int Smb380Sensor::readEvents(sensors_event_t* data, int count)
 {
-    //LOGD("Smb380Sensor::~readEvents() %d", count);
+    //LOGE("Smb380Sensor: count=%d mEnabled=%d",count, mEnabled);
     if (count < 1)
         return -EINVAL;
-        
     if (mHasPendingEvent) {
         mHasPendingEvent = false;
         mPendingEvent.timestamp = getTimestamp();
         *data = mPendingEvent;
         return mEnabled ? 1 : 0;
     }
-        
     ssize_t n = mInputReader.fill(data_fd);
     if (n < 0)
         return n;
-
     int numEventReceived = 0;
     input_event const* event;
-	
     while (count && mInputReader.readEvent(&event)) {
         int type = event->type;
         if (type == EV_ABS) {
@@ -160,7 +153,7 @@ int Smb380Sensor::readEvents(sensors_event_t* data, int count)
             } else if (event->code == EVENT_TYPE_ACCEL_Y) {
                 mPendingEvent.acceleration.y = value * CONVERT_A_Y;
             } else if (event->code == EVENT_TYPE_ACCEL_Z) {
-                mPendingEvent.acceleration.z = value * CONVERT_A_Z;
+	      mPendingEvent.acceleration.z = value * CONVERT_A_Z;
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
@@ -175,8 +168,5 @@ int Smb380Sensor::readEvents(sensors_event_t* data, int count)
         }
         mInputReader.next();
     }
- 
-	//LOGD("Smb380Sensor::~readEvents() numEventReceived = %d", numEventReceived);
-	return numEventReceived++;
-		
+    return numEventReceived++;
 }

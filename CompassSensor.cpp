@@ -35,7 +35,7 @@ CompassSensor::CompassSensor()
       mInputReader(4),
       mHasPendingEvent(false)
 {
-    LOGD("CompassSensor::CompassSensor()");
+    //LOGD("CompassSensor::CompassSensor()");
     mPendingEvent.version = sizeof(sensors_event_t);
     mPendingEvent.sensor = ID_M;
     mPendingEvent.type = SENSOR_TYPE_MAGNETIC_FIELD;
@@ -44,7 +44,7 @@ CompassSensor::CompassSensor()
     
     memset(mPendingEvent.data, 0, sizeof(mPendingEvent.data));
     
-    LOGD("CompassSensor::CompassSensor() open data_fd");
+    //LOGD("CompassSensor::CompassSensor() open data_fd");
 	
     if (data_fd) {
         strcpy(input_sysfs_path, "/sys/class/input/");
@@ -58,18 +58,16 @@ CompassSensor::CompassSensor()
 
 CompassSensor::~CompassSensor() {
 
-    LOGD("CompassSensor::~CompassSensor()");
+    //LOGD("CompassSensor::~CompassSensor()");
     if (mEnabled) {
-        enable(0, 0);
+        enable(1, 0);
     }
 }
 
 
 
 int CompassSensor::enable(int32_t, int en) {
-
-	   
-    LOGD("CompassSensor::~enable(0, %d)", en);
+    //LOGD("CompassSensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
     mEnabled = flags;
     if (flags == 1) system("G5sensors m 1");
@@ -134,7 +132,7 @@ int CompassSensor::setDelay(int32_t handle, int64_t ns)
 
 int CompassSensor::readEvents(sensors_event_t* data, int count)
 {
-    //LOGD("CompassSensor::~readEvents() %d", count);
+    //LOGD("CompassSensor::readEvents() %d", count);
     if (count < 1)
         return -EINVAL;
         

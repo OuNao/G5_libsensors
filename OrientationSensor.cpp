@@ -35,13 +35,13 @@ OrientationSensor::OrientationSensor()
       mInputReader(4),
       mHasPendingEvent(false)
 {
-    LOGD("OrientationSensor::OrientationSensor()");
+    //LOGD("OrientationSensor::OrientationSensor()");
     mPendingEvent.version = sizeof(sensors_event_t);
     mPendingEvent.sensor = ID_O;
     mPendingEvent.type =  SENSOR_TYPE_ORIENTATION;
     memset(mPendingEvent.data, 0, sizeof(mPendingEvent.data));
     
-    LOGD("OrientationSensor::OrientationSensor() open data_fd");
+    //LOGD("OrientationSensor::OrientationSensor() open data_fd");
 	
     if (data_fd) {
         strcpy(input_sysfs_path, "/sys/class/input/");
@@ -55,17 +55,15 @@ OrientationSensor::OrientationSensor()
 
 OrientationSensor::~OrientationSensor() {
 
-    LOGD("OrientationSensor::~OrientationSensor()");
+    //LOGD("OrientationSensor::~OrientationSensor()");
     if (mEnabled) {
-        enable(0, 0);
+        enable(2, 0);
     }
 }
 
 
 int OrientationSensor::enable(int32_t, int en) {
-
-	   
-    LOGD("OrientationSensor::~enable(0, %d)", en);
+    //LOGD("OrientationSensor::~enable(0, %d)", en);
     int flags = en ? 1 : 0;
     mEnabled = flags;
     if (flags == 1) system("G5sensors o 1");
@@ -131,7 +129,7 @@ int OrientationSensor::setDelay(int32_t handle, int64_t ns)
 
 int OrientationSensor::readEvents(sensors_event_t* data, int count)
 {
-    //LOGD("OrientationSensor::~readEvents() %d", count);
+    //LOGD("OrientationSensor::readEvents() %d", count);
     if (count < 1)
         return -EINVAL;
         

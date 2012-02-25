@@ -55,21 +55,21 @@ __BEGIN_DECLS
 #define NUMOFACCDATA                8
 
 // conversion of acceleration data to SI units (m/s^2)
-#define RANGE_A                     (2*GRAVITY_EARTH)
-#define RESOLUTION_A                (RANGE_A/(512))
+#define RANGE_A                     (8*GRAVITY_EARTH)
+#define RESOLUTION_A                (GRAVITY_EARTH/32768.0f)
 #define CONVERT_A                   (RANGE_A/(512))
 #define CONVERT_A_X                 (CONVERT_A)
 #define CONVERT_A_Y                 (CONVERT_A)
 #define CONVERT_A_Z                 (CONVERT_A)
 
 // conversion of magnetic data to uT units
-#define CONVERT_M                   (1.0f/1000.0f)
+#define CONVERT_M                   (100.0f/32768.0f)
 #define CONVERT_M_X                 (CONVERT_M)
 #define CONVERT_M_Y                 (CONVERT_M)
 #define CONVERT_M_Z                 (CONVERT_M)
 
 /* conversion of orientation data to degree units */
-#define CONVERT_O                   (1.0f/1000.0f)
+#define CONVERT_O                   (360.0f/65536.0f)
 #define CONVERT_O_A                 (CONVERT_O)
 #define CONVERT_O_P                 (CONVERT_O)
 #define CONVERT_O_R                 (CONVERT_O)

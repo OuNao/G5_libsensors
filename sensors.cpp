@@ -46,9 +46,9 @@
 #define SENSORS_MAGNETIC_FIELD   (1<<ID_M)
 #define SENSORS_ORIENTATION      (1<<ID_O)
 
-#define SENSORS_ACCELERATION_HANDLE     0
-#define SENSORS_MAGNETIC_FIELD_HANDLE   1
-#define SENSORS_ORIENTATION_HANDLE      2
+#define SENSORS_ACCELERATION_HANDLE     (ID_A)
+#define SENSORS_MAGNETIC_FIELD_HANDLE   (ID_M)
+#define SENSORS_ORIENTATION_HANDLE      (ID_O)
 
 /*****************************************************************************/
 
@@ -62,7 +62,7 @@ static const struct sensor_t sSensorList[] = {
         { "MMC31xx Magnetic field sensor",
           "Memsic",
           1, SENSORS_MAGNETIC_FIELD_HANDLE,
-          SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 30000, { } },
+          SENSOR_TYPE_MAGNETIC_FIELD, 800.0f, CONVERT_M, 6.8f, 30000, { } },
 	{ "Memsic/Bosh combo Orientation Sensor",
           "Memsic/Bosh",
           1, SENSORS_ORIENTATION_HANDLE,
@@ -215,7 +215,6 @@ int sensors_poll_context_t::real_activate(int handle, int enabled) {
 }
 
 int sensors_poll_context_t::setDelay(int handle, int64_t ns) {
-
     int index = handleToDriver(handle);
     if (index < 0) return index;
     return mSensors[index]->setDelay(handle, ns);
@@ -223,7 +222,7 @@ int sensors_poll_context_t::setDelay(int handle, int64_t ns) {
 
 int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
 {
-    int nbEvents = 0;
+  int nbEvents = 0;
     int n = 0;
 
     do {
@@ -231,7 +230,7 @@ int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
         for (int i=0 ; count && i<numSensorDrivers ; i++) {
             SensorBase* const sensor(mSensors[i]);
             if ((mPollFds[i].revents & POLLIN) || (sensor->hasPendingEvents())) {
-                int nb = sensor->readEvents(data, count);
+	      int nb = sensor->readEvents(data, count);
                 if (nb < count) {
                     // no more data for this sensor
                     mPollFds[i].revents = 0;
@@ -248,7 +247,6 @@ int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
             // anything to return
             n = poll(mPollFds, numFds, nbEvents ? 0 : -1);
             if (n<0) {
-                LOGE("poll() failed (%s)", strerror(errno));
                 return -errno;
             }
             if (mPollFds[wake].revents & POLLIN) {
@@ -256,7 +254,6 @@ int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
                 int result = read(mPollFds[wake].fd, &msg, 1);
                 LOGE_IF(result<0, "error reading from wake pipe (%s)", strerror(errno));
                 LOGE_IF(msg != WAKE_MESSAGE, "unknown message on wake queue (0x%02x)", int(msg));
-
                 mPollFds[wake].revents = 0;
             }
         }
