@@ -153,7 +153,7 @@ int Smb380Sensor::readEvents(sensors_event_t* data, int count)
             } else if (event->code == EVENT_TYPE_ACCEL_Y) {
                 mPendingEvent.acceleration.y = value * CONVERT_A_Y;
             } else if (event->code == EVENT_TYPE_ACCEL_Z) {
-	      mPendingEvent.acceleration.z = value * CONVERT_A_Z;
+                mPendingEvent.acceleration.z = value * CONVERT_A_Z;
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
