@@ -74,6 +74,7 @@ int CompassSensor::enable(int32_t, int en) {
     mEnabled = flags;
     fd = open("/dev/ecompass_ctrl", O_RDWR);
     res = ioctl(fd, ECOMPASS_IOC_SET_MFLAG, &flags);
+    close(fd);
     /*if (flags == 1) system("G5sensors m 1");
     else if  (flags == 0) system("G5sensors m 0");*/
     return res;

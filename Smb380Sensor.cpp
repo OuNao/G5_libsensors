@@ -72,6 +72,7 @@ int Smb380Sensor::enable(int32_t, int en) {
     mEnabled = flags;
     fd = open("/dev/ecompass_ctrl", O_RDWR);
     res = ioctl(fd, ECOMPASS_IOC_SET_AFLAG, &flags);
+    close(fd);
     /*if (flags == 1) system("G5sensors a 1");
     else if  (flags == 0) system("G5sensors a 0");*/
     return res;

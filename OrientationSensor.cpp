@@ -71,6 +71,7 @@ int OrientationSensor::enable(int32_t, int en) {
     mEnabled = flags;
     fd = open("/dev/ecompass_ctrl", O_RDWR);
     res = ioctl(fd, ECOMPASS_IOC_SET_OFLAG, &flags);
+    close(fd);
     /*if (flags == 1) system("G5sensors o 1");
     else if  (flags == 0) system("G5sensors o 0");*/
     return res;
