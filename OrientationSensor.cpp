@@ -27,12 +27,12 @@
 
 #include "OrientationSensor.h"
 
-#include "mecs.h"
+#include <linux/i2c/mecs.h>
 
 
 /*****************************************************************************/
 OrientationSensor::OrientationSensor()
-    : SensorBase(NULL, "ecompass_data"),
+    : SensorBase(NULL, "magnetic_sensor"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false)

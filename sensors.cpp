@@ -55,16 +55,16 @@
 /* The SENSORS Module */
 static const struct sensor_t sSensorList[] = {
 
-        { "BMA023 Accelerometer",
+        { "BMA023 Accelerometer Sensor",
           "Bosch Sensortec",
           1, SENSORS_ACCELERATION_HANDLE,
           SENSOR_TYPE_ACCELEROMETER, RANGE_A, RESOLUTION_A, 0.20f, 40000, { } },
-        { "MMC31xx Magnetic field sensor",
-          "Memsic",
+        { "MMC31xx Magnetic Field Sensor",
+          "MEMSIC",
           1, SENSORS_MAGNETIC_FIELD_HANDLE,
           SENSOR_TYPE_MAGNETIC_FIELD, 800.0f, CONVERT_M, 6.8f, 30000, { } },
-	{ "Memsic/Bosh combo Orientation Sensor",
-          "Memsic/Bosh",
+	{ "MEMSIC/Bosch Combo Orientation Sensor",
+          "MEMSIC/Bosch Sensortec",
           1, SENSORS_ORIENTATION_HANDLE,
           SENSOR_TYPE_ORIENTATION,  360.0f, CONVERT_O, 7.8f, 30000, { } },
 };
@@ -187,8 +187,9 @@ sensors_poll_context_t::~sensors_poll_context_t() {
 }
 
 int sensors_poll_context_t::activate(int handle, int enabled) {
-    int err;
-
+    int prev_state, state;
+    if (mOrientationActive==true || mAccelActive==true || mMagnetActive==true) prev_state=1;
+    else prev_state=0;
     if (handle == ID_O) {
         mOrientationActive = enabled ? true : false;
     }
@@ -198,7 +199,10 @@ int sensors_poll_context_t::activate(int handle, int enabled) {
     else if (handle == ID_M) {
         mMagnetActive = enabled ? true : false;
     }
-
+    if (mOrientationActive==true || mAccelActive==true || mMagnetActive==true) state=1;
+    else state=0;
+    if (state==0 && prev_state==1) system("killall g5sensord");
+    else if (state==1 && prev_state==0) system("start g5sensord");
     return real_activate(handle, enabled);
 }
 

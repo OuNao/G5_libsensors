@@ -27,12 +27,12 @@
 
 #include "Smb380Sensor.h"
 
-#include "mecs.h"
+#include <linux/i2c/mecs.h>
 
 
 /*****************************************************************************/
 Smb380Sensor::Smb380Sensor()
-    : SensorBase(NULL, "ecompass_data"),
+    : SensorBase(NULL, "magnetic_sensor"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false)

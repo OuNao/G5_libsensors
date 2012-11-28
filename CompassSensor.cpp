@@ -27,12 +27,12 @@
 
 #include "CompassSensor.h"
 
-#include "mecs.h"
+#include <linux/i2c/mecs.h>
 
 
 /*****************************************************************************/
 CompassSensor::CompassSensor()
-    : SensorBase(NULL, "ecompass_data"),
+    : SensorBase(NULL, "magnetic_sensor"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false)
